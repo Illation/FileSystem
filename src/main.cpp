@@ -14,17 +14,14 @@
 int CopyTest(int argc, char* argv[])
 {
     /* Are src and dest file name arguments missing */
-    if(argc != 3){
-        printf ("Usage: cp file1 file2");
+    if(argc != 4){
+        printf ("Usage: cp [file] [target]");
         return 1;
     }
-	//std::string arg1 = "C:/Users/Administrator/Desktop/DAE/Semester 5/PlatformDev/Repo/PlatformDev/exam/PakGenerator/bin/debug/test_file.txt";
-	//std::string arg2 = "C:/Users/Administrator/Desktop/DAE/Semester 5/PlatformDev/Repo/PlatformDev/exam/PakGenerator/bin/debug/copy_file.txt";
-
 
     /* Create input file descriptor */
-	File *input = new File(argv[1], nullptr);
-    File *output = new File(argv[2], nullptr);
+	File *input = new File(argv[2], nullptr);
+    File *output = new File(argv[3], nullptr);
 
     if(!input->Open(FILE_ACCESS_MODE::Read))
     {
@@ -96,17 +93,25 @@ void RecursivePrintChildrenExt(std::string indent, Directory* pDir, std::string 
 }
 int DirectoryTest(int argc, char* argv[])
 {
-    Directory* pDir = new Directory("../../", nullptr);
+	if(argc < 3)
+	{
+		std::cout << "Usage: mnt [directory] [optional: extension]" << std::endl;
+		return 5;
+	}
+
+	std::string dirName = argv[2];
+    Directory* pDir = new Directory(dirName, nullptr);
+
     std::cout << "mounting directory . . ." << std::endl;
     if(!pDir->Mount(true))
     {
         std::cerr << "failed to mount Directory" << std::endl;
-        return 1;
+        return 2;
     }
     std::cout << "Directory mounted" << std::endl;
     std::cout << "Files in dir: " << std::endl << std::endl;
 
-	if(argc > 1)RecursivePrintChildrenExt("", pDir, argv[1]);
+	if(argc > 3)RecursivePrintChildrenExt("", pDir, argv[3]);
     else RecursivePrintChildren("", pDir);
 
     delete pDir;
@@ -114,8 +119,24 @@ int DirectoryTest(int argc, char* argv[])
     return EXIT_SUCCESS;
 }
 
+void PrintHelp()
+{
+	std::cout << "Usage: FileSystem [mode] [options]" << std::endl;
+	std::cout << "Modes:" << std::endl;
+	std::cout << "\tcp [file] [target]" << std::endl;
+	std::cout << "\tmnt [directory] [optional: extension]" << std::endl;
+}
+
+
 int main(int argc, char* argv[]) 
 {
-    //return CopyTest(argc, argv);
-    return DirectoryTest(argc, argv);
+	if(argc < 2)
+	{
+		PrintHelp();
+		return 1;
+	}
+    if(std::string(argv[1]) == "cp")return CopyTest(argc, argv);
+    if(std::string(argv[1]) == "mnt")return DirectoryTest(argc, argv);
+	PrintHelp();
+	return 1;
 }
