@@ -60,3 +60,8 @@ Session.vim
 # temporary
 .netrwhist
 *~
+
+*.vcxproj
+*.vcxproj.filters
+bin/debug/
+build/obj/

@@ -111,14 +111,17 @@ bool FILE_BASE::ReadFile( FILE_HANDLE handle, std::string & content )
 	DWORD bytes_read = 0;
 	if (FALSE == ::ReadFile(handle, buffer_read, bufferSize - 1, &bytes_read, NULL))
 	{
+		delete[] buffer_read;
 		return false;
 	}
 	if (bytes_read >= 0 && bytes_read <= bufferSize - 1) //move buffer to string
 	{
 		buffer_read[bytes_read] = '\0'; // NULL character
 		content = buffer_read;
+		delete[] buffer_read;
 		return true;
 	}
+	delete[] buffer_read;
 	return false;
 }
 

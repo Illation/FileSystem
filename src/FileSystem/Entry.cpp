@@ -86,13 +86,23 @@ void Directory::RecursiveMount()
     {
         if(c->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
         {
-	    if(c->GetName() != "../" && c->GetName() != "./")
-		static_cast<Directory*>(c)->Mount(true); 
+			if(c->GetName() != "../" && c->GetName() != "./")
+				static_cast<Directory*>(c)->Mount(true); 
         }
     }
 }
 void Directory::Unmount()
 {
+    for(auto c : m_pChildren)
+    {
+        if(c->GetType() == Entry::EntryType::ENTRY_DIRECTORY)
+        {
+			if(c->GetName() != "../" && c->GetName() != "./")
+				static_cast<Directory*>(c)->Unmount();
+        }
+		delete c;
+		c = nullptr;
+    }
     m_pChildren.clear();
     m_IsMounted = false;
 }
